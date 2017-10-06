@@ -1,0 +1,149 @@
+
+#include "device.h"
+#include "daemon.h"
+
+#define SHELL_MAX_LEVEL 2
+
+void map_pretty(void *object, size_t size, list_t *pass) {
+	if(!pass) {
+		pass = list_make(object);
+	} else {
+		list_add(list_last(pass), list_make(object));
+	}
+	void print(void*, size_t);
+	unsigned level = list_size(pass);
+	char indent[SHELL_MAX_LEVEL+1];
+	for(int i=0; i<level; i++) {
+		indent[i] = '\t';
+		continue;
+	}
+	indent[level] = '\0';
+	node_t *node = (node_t*) node;
+	link_t *link = (link_t*) link;
+	packet_t *packet = (packet_t*) object;
+	switch(size) {
+		case sizeof(packet_t):
+			printf(
+				"%s packet: %d -> %d (ttl:%d chk:%d): %s \n",
+				indent,
+				packet->src,
+				packet->dst,
+				packet->ttl,
+				packet->checksum,
+				packet->data,
+				NULL
+			);
+			break;
+		case sizeof(link_t):
+			break;
+		case sizeof(node_t):
+			break;
+		default:
+			break;
+	}
+	if(level < SHELL_MAX_LEVEL) {
+		map_pretty(object, size, pass);
+	}
+	return;
+}
+
+char prompt(const char *msg, const char *choices) {
+	const unsigned bsz = 5;
+	unsigned count = strlen(choices);
+	char *params = (char*) malloc(2*count * sizeof(char));
+	for(int i=0; i<count; i++) {
+		params[abs(2*i-1)] = '/';
+		params[2*i] = choices[i];
+		continue;
+	}
+	params[2*count-1] = '\0';
+	printf("%s: [%s]: ", msg, params);
+	free(params);
+	char buf[bsz];
+	fgets(buf, bsz, stdin);
+	return buf[0];
+}
+
+void shell_packet(daemon_t *daemon) {
+	return;
+}
+
+void shell_link(daemon_t *daemon) {
+	return;
+}
+
+void shell_node(daemon_t *daemon) {
+	return;
+}
+
+void shell(const char **args) {
+	char resp;
+	daemon_t daemon = {
+		.id = {
+			.min = 1,
+			.max = 9,
+		},
+		.latency = {
+			.exp = 3,
+			.base = 1,
+		},
+		.transactions = NULL,
+		.thread = NULL,
+		.links = NULL,
+		.nodes = NULL,
+		.runtime = 10,
+	};
+	start:
+	switch(resp = prompt("enter command", "splndoxq")) {
+		case 's': // show
+			break;
+		case 'p': // packet
+			shell_packet(&daemon);
+			break;
+		case 'l': // link
+			shell_link(&daemon);
+			break;
+		case 'n': // node
+			shell_node(&daemon);
+			break;
+		case 'd': // delete
+			break;
+		case 'o': // options
+			printf(
+				"Current options:\n"
+				"\ta) latency.exp: %d\n"
+				"\tb) latency.base: %d\n"
+				"\tc) runtime: %llu\n",
+				daemon.latency.exp,
+				daemon.latency.base,
+				daemon.runtime
+			);
+			char buf[80];
+			resp = prompt("your selection", "abc");
+			printf("enter new value (int): ");
+			fgets(buf, sizeof(buf), stdin);
+			switch(resp) {
+				case 'a':
+					daemon.latency.exp = atoi(buf);
+					break;
+				case 'b':
+					daemon.latency.base = atoi(buf);
+					break;
+				case 'c':
+					daemon.runtime = atoi(buf);
+					break;
+				default:
+					break;
+			}
+			break;
+		case 'x': // exec
+			break;
+		case 'q': // quit
+			goto quit;
+			break;
+		default:
+			break;
+	}
+	goto start;
+	quit: return;
+}
