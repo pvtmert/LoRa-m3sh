@@ -9,6 +9,8 @@ var files =
     [ "lora.c", "lora_8c_source.htm", null ],
     [ "lora.h", "lora_8h.htm", "lora_8h" ],
     [ "main.c", "main_8c_source.htm", null ],
+    [ "rsa-md5.c", "rsa-md5_8c_source.htm", null ],
     [ "shell.c", "shell_8c_source.htm", null ],
-    [ "test.c", "test_8c_source.htm", null ]
+    [ "test.c", "test_8c_source.htm", null ],
+    [ "wsock.c", "wsock_8c_source.htm", null ]
 ];

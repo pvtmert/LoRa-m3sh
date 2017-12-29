@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name='author' content='Mert Akengin' />
+		<meta name='description' content='capstone project' />
+		<meta name='keywords' content='bluetooth, beacon, ble, low, energy, lora lorawan' />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.1, user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta id="theme-color" name="theme-color" content="#5764C6" />
+		<link rel='author' href='//pvtmert.github.io' />
+		<link rel="icon" type="image/png" href="./logo.png" />
+		<link rel='stylesheet' type='text/css' href='./spectre.min.css' />
+		<link rel='stylesheet' type='text/css' href='./spectre-exp.min.css' />
+		<link rel='stylesheet' type='text/css' href='./spectre-icons.min.css' />
+		<link rel='stylesheet' type='text/css' href='./style.css' />
+		<title>Wide Area Mesh Network</title>
+	</head>
+	<body class="">
+		<header class="navbar">
+			<section class="navbar-section py-2">
+				<a class="off-canvas-toggle btn btn-primary btn-action mx-2 show-lg" href="#menu" >
+					<i class="icon icon-menu"></i>
+				</a>
+				<a href="#" class="navbar-brand ml-2" >LoRa M3SH</a>
+			</section>
+			<section class="navbar-section px-1 py-2">
+				<button class="btn btn-primary btn-action mx-1 d-hide" >
+					<i class="icon icon-plus"></i>
+				</button>
+				<button class="btn btn-primary btn-action mx-1 d-hide" >
+					<i class="icon icon-search"></i>
+				</button>
+				<button class="btn btn-primary btn-action mx-1 d-hide" >
+					<i class="icon icon-link"></i>
+				</button>
+				<button class="btn btn-primary btn-action mx-1 d-hide" id=edit onclick="window.location.hash = '#chname'">
+					<i class="icon icon-edit"></i>
+				</button>
+			</section>
+		</header>
+		<div class="off-canvas off-canvas-sidebar-show" >
+			<div id="menu" class="off-canvas-sidebar p-2 _flex-centered">
+				<button class="btn btn-primary"
+					onclick="this.parentNode.querySelector('#side-add').classList.toggle('d-hide')">
+					<i class="icon icon-link"></i> Add Peer</button>
+				<div class="popover popover-bottom">
+					<button class="btn"><i class="icon icon-people"></i> My ID</button>
+					<div class="popover-container">
+						<div class="card">
+							<div class="card-header"></div>
+							<div class="card-body" id=my ><div class="loading loading-lg centered"></div></div>
+							<div class="card-footer">
+								<button class="btn float-right" onclick="connect()" >connect</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="input-group my-2 d-hide" id=side-add >
+					<input type="text" class="form-input text-center" placeholder="#" size=10 autofocus id=peer />
+					<button class="btn btn-primary input-group-btn" onclick="start(this)"><i class="icon icon-plus" ></i></button>
+				</div>
+				<ul class="nav">
+					<li class="nav-item"></li>
+				</ul>
+			</div>
+			<a class="off-canvas-overlay" href="#"></a>
+			<div class="off-canvas-content ">
+				<div class="empty" id=device >
+					<div class="empty-icon">
+						<i class="icon icon-link icon-4x"></i>
+					</div>
+					<p class="empty-title h5">You haven&apos;t connected yet</p>
+					<p class="empty-subtitle">Click the button to connect.</p>
+					<div class="empty-action">
+						<button class="btn btn-primary" onclick="connect()" >Connect</button>
+					</div>
+				</div>
+				<div class="empty" id=message >
+					<div class="empty-icon">
+						<i class="icon icon-mail icon-4x"></i>
+					</div>
+					<p class="empty-title h5">You have no new messages</p>
+					<p class="empty-subtitle">Click the button to start a conversation.</p>
+					<div class="empty-action">
+						<button class="btn btn-primary" onclick="window.location.hash = 'menu'">Send a message</button>
+					</div>
+				</div>
+				<main class="panel d-hide" >
+					<!--div class="panel-header">
+						<div class="panel-title">Conversation</div>
+					</div>
+					<div class="panel-nav"></div-->
+					<div class="panel-body"></div>
+					<div class="panel-footer">
+						<form class="input-group" onsubmit="return sendMesg(this)" >
+							<input type="text" class="form-input" placeholder="Hello World!" autofocus id=msg />
+							<button type=button class="btn btn-primary input-group-btn" onclick="sendLocation(event)" ><i class="icon icon-location"></i></button>
+							<button class="btn btn-primary input-group-btn" >Send</button>
+							<!--input type="hidden" name="addr" /-->
+						</form>
+					</div>
+				</main>
+			</div>
+		</div>
+		<div class="modal modal-sm" id="chname">
+			<a href="#" class="modal-overlay" aria-label="Close"></a>
+			<div class="modal-container">
+				<div class="modal-header">
+					<a href="#" class="btn btn-clear float-right" aria-label="Close"></a>
+					<div class="modal-title h5">Set Name</div>
+				</div>
+				<div class="modal-body">
+					<div class="content">
+						<div class="form-group">
+							<label class="form-label" for="name">Name</label>
+							<input class="form-input" type="text" id="name" placeholder="Name">
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer text-right">
+					<button class="btn" onclick="window.location.hash = '#'">Cancel</button>
+					<button class="btn btn-primary" onclick="chname()">OK</button>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript" src="./script.js" async defer ></script>
+		<script type="text/javascript" src="./marked.min.js" async defer ></script>
+		<script type="text/javascript" src="./highlight.pack.js" async defer ></script>
+	</body>
+</html>

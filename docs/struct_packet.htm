@@ -94,6 +94,9 @@ $(document).ready(function(){initNavTree('struct_packet.htm','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
+<tr class="memitem:a2742cf75b2bb2c13a43dec7ef32e3c8c"><td class="memItemLeft" align="right" valign="top"><a id="a2742cf75b2bb2c13a43dec7ef32e3c8c"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>magic</b></td></tr>
+<tr class="separator:a2742cf75b2bb2c13a43dec7ef32e3c8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae41e4b26761733ee61af081334fc9cfd"><td class="memItemLeft" align="right" valign="top"><a id="ae41e4b26761733ee61af081334fc9cfd"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>checksum</b></td></tr>
 <tr class="separator:ae41e4b26761733ee61af081334fc9cfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -106,20 +109,23 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>checksum</b></td>
 <tr class="memitem:ace59c48fac7074ca6aceb6e8a637de7f"><td class="memItemLeft" align="right" valign="top"><a id="ace59c48fac7074ca6aceb6e8a637de7f"></a>
 uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>ttl</b></td></tr>
 <tr class="separator:ace59c48fac7074ca6aceb6e8a637de7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a31b0d07d42a65b3fb8863d4cd1d1f9e7"><td class="memItemLeft" align="right" valign="top"><a id="a31b0d07d42a65b3fb8863d4cd1d1f9e7"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>length</b></td></tr>
-<tr class="separator:a31b0d07d42a65b3fb8863d4cd1d1f9e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb35182589c908d12c547a7276036998"><td class="memItemLeft" align="right" valign="top"><a id="aeb35182589c908d12c547a7276036998"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>data</b> [_LORA_PKG_SIZE_]</td></tr>
-<tr class="separator:aeb35182589c908d12c547a7276036998"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf5f5bae43f927d2977833232f4b9562"><td class="memItemLeft" align="right" valign="top"><a id="adf5f5bae43f927d2977833232f4b9562"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>length</b></td></tr>
+<tr class="separator:adf5f5bae43f927d2977833232f4b9562"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af5a5699241dabe8e38ca151bcfdf0142"><td class="memItemLeft" align="right" valign="top"><a id="af5a5699241dabe8e38ca151bcfdf0142"></a>
 <a class="el" href="lora_8h.htm#ae9f2c0d2a6bd0be19a12dba62f2277b2">packet_type_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>type</b>: PKG_TYPE_BITS</td></tr>
 <tr class="separator:af5a5699241dabe8e38ca151bcfdf0142"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a931fc5fd893705573d88b6647b030c0b"><td class="memItemLeft" align="right" valign="top"><a id="a931fc5fd893705573d88b6647b030c0b"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>data_crc</b></td></tr>
+<tr class="separator:a931fc5fd893705573d88b6647b030c0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb35182589c908d12c547a7276036998"><td class="memItemLeft" align="right" valign="top"><a id="aeb35182589c908d12c547a7276036998"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>data</b> [_LORA_PKG_SIZE_]</td></tr>
+<tr class="separator:aeb35182589c908d12c547a7276036998"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>packet type definition. defines type 'packet' uses 'packed' attribute to send minimum number of bytes over network to maintain high throughput and low redundancy </p>
 
-<p class="definition">Definition at line <a class="el" href="lora_8h_source.htm#l00079">79</a> of file <a class="el" href="lora_8h_source.htm">lora.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="lora_8h_source.htm#l00083">83</a> of file <a class="el" href="lora_8h_source.htm">lora.h</a>.</p>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>
 <li><a class="el" href="lora_8h_source.htm">lora.h</a></li>
 </ul>

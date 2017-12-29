@@ -161,7 +161,7 @@ unsigned long list_array(list_t *list, void **target) {
 }
 
 ///
-/// \brief removes top item list
+/// \brief removes top/first item in the list
 ///
 /// \param list reference to be removed
 ///

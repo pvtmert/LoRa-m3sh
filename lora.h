@@ -15,8 +15,9 @@
 #include "list.h"
 #include "device.h"
 
-#define _LORA_PKG_SIZE_ 256
+#define _LORA_PKG_SIZE_ 230
 #define _LORA_MAX_CONN_ 128
+#define _LORA_MAGIC_ ((0x4d << 0) | (0x33 << 8) | (0x53 << 16) | (0x48 << 24))
 
 // lora brcast addrs: 0, 1
 // https://www.libelium.com/forum/viewtopic.php?p=51639&sid=ac0f0fdc3d14536e8031191e6f277990#p51667
@@ -31,8 +32,8 @@ typedef enum PacketType {
 	PKG_TYPE_ACK  = 1 << 1,
 	PKG_TYPE_RLY  = 1 << 2,
 	PKG_TYPE_404  = 1 << 3,
-	PKG_TYPE_RES1 = 1 << 4,
-	PKG_TYPE_RES2 = 1 << 5,
+	PKG_TYPE_FIND = 1 << 4,
+	PKG_TYPE_CONT = 1 << 5,
 	PKG_TYPE_RES3 = 1 << 6,
 	PKG_TYPE_RES4 = 1 << 7,
 	PKG_TYPE_BITS = 8,
@@ -68,7 +69,10 @@ typedef uint32_t addr_t;
 /// number of bytes over network to maintain
 /// high throughput and low redundancy
 ///
-/// \var checksum 32-bit checksum of packet
+/// \var checksum 64-bit checksum of packet, divideed into 2 parts,
+///      1st element of the array is the packet header checksum
+///      2nd element of the array is the packet data checksum
+/// \var magic magic 'number' actually 4-chars to identify packet
 /// \var src source address where packet is originated from
 /// \var dst destination address where packet should be delivered to
 /// \var ttl time to live value of the packet
@@ -77,13 +81,15 @@ typedef uint32_t addr_t;
 /// \var type type and flags of packet
 ///
 typedef struct Packet {
+	uint32_t magic;
 	uint32_t checksum;
 	addr_t src;
 	addr_t dst;
 	uint16_t ttl;
-	uint16_t length;
-	uint8_t data[_LORA_PKG_SIZE_];
+	uint8_t length;
 	packet_type_t type: PKG_TYPE_BITS;
+	uint32_t data_crc;
+	uint8_t data[_LORA_PKG_SIZE_];
 } __attribute__((packed)) packet_t;
 
 ///
@@ -134,7 +140,9 @@ packet_t* packet_make(
 	const packet_type_t,
 	const uint16_t
 );
-uint32_t packet_prepare(packet_t*, const uint16_t, const void*);
+uint32_t packet_prepare(packet_t*, const uint8_t, const void*);
+uint32_t packet_getsum(packet_t*);
+bool packet_verify(packet_t*);
 
 ////////////////////////////////////////
 

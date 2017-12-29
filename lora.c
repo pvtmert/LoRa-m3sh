@@ -13,6 +13,7 @@
 /// generic functions
 ///
 
+#define DO fletch1 += *data++; fletch2 += fletch1; l--;
 ///
 /// \brief a 32-bit checksum algorithm.
 /// used to checksum packet contents
@@ -23,22 +24,41 @@
 ///
 /// \return uint32_t (32-bits unsigned int) generated from sum
 ///
-uint32_t fletcher32(uint16_t const *data, size_t words) {
-	uint32_t sum1 = 0xffff, sum2 = 0xffff;
-	size_t tlen;
-	while (words) {
-		tlen = ((words >= 359) ? 359 : words);
-		words -= tlen;
-		do {
-			sum2 += sum1 += *data++;
-			tlen--;
-		} while (tlen);
-		sum1 = (sum1 & 0xffff) + (sum1 >> 16);
-		sum2 = (sum2 & 0xffff) + (sum2 >> 16);
+uint32_t fletcher32(const void *buf1, size_t len, uint32_t fletcher) {
+	(void)fletcher;
+	const char *data= buf1;
+	uint32_t fletch1 = 0xFFFF;
+	uint32_t fletch2 = 0xFFFF;
+	while (data && len) {
+		size_t l = (len <= 360) ? len : 360;
+		len -= l;
+		while (l) {
+			DO;
+		}
+		fletch1 = (fletch1 & 0xFFFF) + (fletch1 >> 16);
+		fletch2 = (fletch2 & 0xFFFF) + (fletch2 >> 16);
 	}
-	sum1 = (sum1 & 0xffff) + (sum1 >> 16);
-	sum2 = (sum2 & 0xffff) + (sum2 >> 16);
-	return (sum2 << 16) | sum1;
+	return (fletch2 << 16) | (fletch1 & 0xFFFF);
+}
+
+uint32_t fletcher32_4(const void *buf1, size_t len, uint32_t fletcher) {
+	(void)fletcher;
+	const char *data = buf1;
+	uint32_t fletch1 = 0xFFFF;
+	uint32_t fletch2 = 0xFFFF;
+	while (data && len) {
+		size_t l = (len <= 360) ? len : 360;
+		len -= l;
+		while (l) {
+			DO;
+			DO;
+			DO;
+			DO;
+		}
+		fletch1 = (fletch1 & 0xFFFF) + (fletch1 >> 16);
+		fletch2 = (fletch2 & 0xFFFF) + (fletch2 >> 16);
+	}
+	return (fletch2 << 16) | (fletch1 & 0xFFFF);
 }
 
 ///
@@ -74,18 +94,19 @@ void errorv(const char *message, ...) {
 ///
 packet_t* packet_make(const addr_t src, const addr_t dst,
 	const packet_type_t type, const uint16_t ttl) {
-	packet_t *packet = (packet_t*) malloc(sizeof(packet_t));
-	memset(packet, 0, sizeof(packet_t));
+	packet_t *packet = (packet_t*) calloc(1, sizeof(packet_t));
 	packet->src = src;
 	packet->dst = dst;
 	packet->ttl = ttl;
 	packet->type = type;
-	packet->checksum = 0;
+	packet->magic = _LORA_MAGIC_;
+//	packet->checksum[0] = 0;
+//	packet->checksum[1] = 0;
 //	packet->length = length;
 //	memcpy(packet->data, data, length);
+	packet->checksum = 0L;
 	return packet;
 }
-
 
 #define _LORA_PKG_FMT_ "%08X"
 ///
@@ -112,6 +133,11 @@ void packet_dump(packet_t *pkg, size_t width) {
 	if(width) {
 		for(int i=0; i<pkg->length; i++) {
 			if(!(i%width)) {
+				for(int j=width; j>0; j--) {
+					// TODO:check package hexdump if dumps correct or not
+					printf("%c", *(char*)(pkg->data - width + j));
+					continue;
+				}
 				printf("\n %x |", i);
 			}
 			printf(" %02x", *(char*)(pkg->data + i));
@@ -134,16 +160,43 @@ void packet_dump(packet_t *pkg, size_t width) {
 ///
 /// \return checksum of modified packet
 ///
-uint32_t packet_prepare(packet_t *pkg, const uint16_t length, const void *data) {
+
+uint32_t packet_getsum(packet_t *pkg) {
+	pkg->checksum = 0L;
+	return fletcher32((uint16_t const*) pkg, sizeof(packet_t), 0);
+}
+
+uint32_t packet_prepare(packet_t *pkg, const uint8_t length, const void *data) {
 	if(!pkg) {
 		return 0;
 	}
-	memset(pkg->data, 0, sizeof(pkg->data));
-	memcpy(pkg->data, data, length);
-	pkg->length = length;
-	pkg->checksum = 0;
-	pkg->checksum = fletcher32((uint16_t const*)pkg, sizeof(packet_t));
+	if(data) {
+		memset(pkg->data, 0, sizeof(pkg->data));
+		pkg->length = sizeof(pkg->data) < length ? sizeof(pkg->data) : length;
+		memcpy(pkg->data, data, pkg->length);
+		// update data checksum
+		pkg->data_crc = fletcher32(
+			(uint16_t const*) pkg->data, sizeof(pkg->data), 0
+		);
+	}
+	// update packet checksum
+	pkg->checksum = packet_getsum(pkg);
 	return pkg->checksum;
+}
+
+
+///
+/// \brief check packet for validity
+///
+/// \param pkg packet to be validated
+///
+/// \return boolean, true = valid or false = invalid
+///
+bool packet_verify(packet_t *pkg) {
+	uint32_t old_sum = pkg->checksum;
+	uint32_t new_sum = packet_getsum(pkg);
+	pkg->checksum = old_sum;
+	return (old_sum == new_sum);
 }
 
 ////////////////////////////////////////
@@ -226,7 +279,7 @@ void node_recv(node_t *node, packet_t *pkg) {
 ///
 void node_relay(node_t *node, packet_t *pkg) {
 	printf("NODE RELAY node.id:%p pkg:%p thread:%p \n",
-		(void*)node->id, pkg, pthread_self());
+		(void*) node->id, pkg, pthread_self());
 	if(pkg->ttl < 1) {
 		printf("TTL = %hu \n", pkg->ttl);
 		return;
@@ -492,3 +545,6 @@ void print(void *obj, size_t size) {
 	fflush(stdout);
 	return;
 }
+
+////////////////////////////////////////
+

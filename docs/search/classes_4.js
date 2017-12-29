@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['packet',['Packet',['../struct_packet.htm',1,'']]]
+  ['node',['Node',['../struct_node.htm',1,'']]]
 ];

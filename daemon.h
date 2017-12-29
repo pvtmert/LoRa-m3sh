@@ -26,7 +26,7 @@ typedef struct Transaction {
 } transaction_t;
 
 static int msleep(unsigned long mseconds) {
-	return usleep(mseconds * 1000);
+	return usleep(mseconds * 1000UL);
 }
 
 #endif
